@@ -2,7 +2,7 @@
 //  ElementFrameworkTests.swift
 //  ElementFrameworkTests
 //
-//  Created by Tim B on 12.08.22.
+//  Created by Tim B on 19.08.22.
 //
 
 import XCTest
@@ -19,64 +19,52 @@ class ElementFrameworkTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    // 2 simple framework tests to make sure they warn the user
-    
-    func testSchedulerBadLocation() {
-        do {
-            let scheduler = Scheduler(location: "fail", currentTime: "12:34")
-            try scheduler.runSchedule() // Throw a no schedule error
-            
-            XCTFail()
-        } catch let error {
-            let err = error as? SchedulerError
-            XCTAssert(err == SchedulerError.noSchedule)
-        }
+    func testFireSameTime() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "00:00")!
+        let cron = ConcreteCron(cronString: "0 0 abc")!
+        
+        let test = cron.nextFiring(basedOnTime: currentTime)
+        
+        XCTAssert(test.hour == 0 && test.minute == 0)
     }
     
-    func testSchedulerBadTime() {
-        do {
-            if let test1 = Bundle.main.url(forResource: "test1", withExtension: "txt", subdirectory: "Test") {
-                let scheduler = Scheduler(location: test1.absoluteString, currentTime: "ab:34")
-                try scheduler.runSchedule() // Throw a no cant read time error
+    func testFireTomorrowDescription() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "00:01")!
+        let cron = ConcreteCron(cronString: "0 0 abc")!
                 
-                XCTFail()
-            }
-        } catch let error {
-            let err = error as? SchedulerError
-            XCTAssert(err == SchedulerError.cantReadCurrentTime)
-        }
-    }
-
-    // Tests a result that will fire soon
-    func testGoodResultOneMinuteInFuture() {
-        let cron = ConcreteCron(minute: "12", hour: "12", command: "hello")
-        let nextStatement = cron?.nextFiringStatement(currentTime: Time(hour: 12, minute: 11))
-        XCTAssert(nextStatement == "12:12 today - hello")
+        let test = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+        XCTAssert(test == "0:00 tomorrow - abc")
     }
     
-    // Tests a result that will fire soon
-    func testGoodResultTomorrow() {
-        let cron = ConcreteCron(minute: "59", hour: "23", command: "bin/command")
-        let nextStatement = cron?.nextFiringStatement(currentTime: Time(hour: 23, minute: 59))
-        XCTAssert(nextStatement == "23:59 tomorrow - bin/command")
+    func testFireEveryMinDescription() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "00:59")!
+        let cron = ConcreteCron(cronString: "* * abc")!
+        
+        let test = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+        XCTAssert(test == "0:59 today - abc")
     }
     
-    func testGoodResultEveryMin() {
-        let cron = ConcreteCron(minute: "*", hour: "*", command: "bin/command")
-        let nextStatement = cron?.nextFiringStatement(currentTime: Time(hour: 23, minute: 59))
-        XCTAssert(nextStatement == "00:00 tomorrow - bin/command")
+    func testFireEveryHourDescription() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "00:59")!
+        let cron = ConcreteCron(cronString: "1 * abc")!
+        
+        let test = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+        XCTAssert(test == "1:01 today - abc")
     }
     
-    func testGoodResultEveryHour() {
-        let cron = ConcreteCron(minute: "12", hour: "*", command: "bin/command")
-        let nextStatement = cron?.nextFiringStatement(currentTime: Time(hour: 23, minute: 59))
-        XCTAssert(nextStatement == "00:12 tomorrow - bin/command")
+    func testFireSixtyMinDescription() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "00:59")!
+        let cron = ConcreteCron(cronString: "* 0 abc")!
+        
+        let test = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+        XCTAssert(test == "0:59 today - abc")
     }
     
-    func testGoodResultHour60Times() {
-        let cron = ConcreteCron(minute: "*", hour: "15", command: "bin/command")
-        let nextStatement = cron?.nextFiringStatement(currentTime: Time(hour: 23, minute: 59))
-        XCTAssert(nextStatement == "15:00 tomorrow - bin/command")
+    func testFireEndOfDayDescription() {
+        let currentTime = ConcreteTime(fromHHmmFormat: "23:59")!
+        let cron = ConcreteCron(cronString: "* * abc")!
+        
+        let test = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+        XCTAssert(test == "23:59 today - abc")
     }
 }
-

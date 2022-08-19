@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "2209185F28A6301C002E6AF1"
-               BuildableName = "Element"
-               BlueprintName = "Element"
+               BlueprintIdentifier = "2209188828A6AA02002E6AF1"
+               BuildableName = "ElementFramework.framework"
+               BlueprintName = "ElementFramework"
                ReferencedContainer = "container:Element.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,6 +28,16 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "2209189128A6AA02002E6AF1"
+               BuildableName = "ElementFrameworkTests.xctest"
+               BlueprintName = "ElementFrameworkTests"
+               ReferencedContainer = "container:Element.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -40,22 +50,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2209185F28A6301C002E6AF1"
-            BuildableName = "Element"
-            BlueprintName = "Element"
-            ReferencedContainer = "container:Element.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "16:10"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -63,16 +57,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "2209185F28A6301C002E6AF1"
-            BuildableName = "Element"
-            BlueprintName = "Element"
+            BlueprintIdentifier = "2209188828A6AA02002E6AF1"
+            BuildableName = "ElementFramework.framework"
+            BlueprintName = "ElementFramework"
             ReferencedContainer = "container:Element.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

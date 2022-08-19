@@ -7,47 +7,23 @@
 
 import Foundation
 
-
-public enum SchedulerError: Error {
-    case noSchedule
-    case cantReadCurrentTime
-    case scheduleCorrupted
-}
-
 public class Scheduler {
-    private let location: String
-    private let currentTime: String
-    
-    public init(location: String, currentTime: String) {
-        self.location = location
-        self.currentTime = currentTime
+    public static func CreateCron(cronString: String) -> Cron? {
+        return ConcreteCron(cronString: cronString)
     }
     
-    public func runSchedule() throws {
-        do {
-            let rawCrons = try TextFileConfig(location: location)
-            
-            for cronString in rawCrons.args() {
-                
-                let cronStringSeparated = cronString.split(separator: " ")
-                if cronStringSeparated.count == 3 {
-                    let minute = String(cronStringSeparated[0])
-                    let hour = String(cronStringSeparated[1])
-                    let command = String(cronStringSeparated[2])
-                    
-                    if let cron: Cron = ConcreteCron(minute: minute, hour: hour, command: command) {
-                        guard let current = Time(fromHHmmFormat: currentTime) else {
-                            // We throw an error because current time couldnt be parsed
-                            throw SchedulerError.cantReadCurrentTime
-                        }
-                        
-                        print(cron.nextFiringStatement(currentTime: current))
-                    }
-                } else {
-                    throw SchedulerError.scheduleCorrupted
-                }
-            }
-            
+    public static func CreateTime(fromHHmmFormat timeString: String) -> Time? {
+        return ConcreteTime(fromHHmmFormat: timeString)
+    }
+    
+    public static func CronNextFiringDescription(basedOnTime currentTime: Time, forCron cron: Cron) -> String {
+        let nextFire = cron.nextFiring(basedOnTime: currentTime)
+
+        var day = "today"
+        if currentTime.greaterThan(comparison: nextFire) {
+            day = "tomorrow"
         }
+        
+        return "\(nextFire.description) \(day) - \(cron.command)"
     }
 }

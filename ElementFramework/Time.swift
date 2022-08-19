@@ -7,11 +7,20 @@
 
 import Foundation
 
-struct Time {
+public protocol Time {
+    var description: String { get }
+    var hour: Int { get }
+    var minute: Int { get }
+    
+    func greaterThan(comparison: Time) -> Bool
+}
+
+struct ConcreteTime: Time {
+
     private var _hour: Int = 0
     private var _minute: Int = 0
 
-    var hour: Int {
+    public var hour: Int {
         set {
             if newValue >= 24 {
                 _hour = 0
@@ -24,7 +33,7 @@ struct Time {
         get { return _hour }
     }
     
-    var minute: Int {
+    public var minute: Int {
         set {
             if newValue >= 60 {
                 _minute = 0
@@ -54,69 +63,27 @@ struct Time {
         }
     }
 
-    var description: String {
-        var hourStr = "\(self.hour)"
-        if self.hour < 10 {
-            hourStr = "0\(self.hour)"
-        }
+    public var description: String {
+        let hourStr = "\(self.hour)"
+//        if self.hour < 10 {
+//            hourStr = "0\(self.hour)"
+//        }
         var minStr = "\(self.minute)"
         if self.minute < 10 {
             minStr = "0\(self.minute)"
         }
         return "\(hourStr):\(minStr)"
     }
-}
-
-/** Add comparable to the time object*/
-extension Time: Comparable {
-    static func < (lhs: Time, rhs: Time) -> Bool {
-        if lhs.hour < rhs.hour {
+    
+    // Its basically >
+    func greaterThan(comparison rhs: Time) -> Bool {
+        if self.hour > rhs.hour {
             return true
-        } else if lhs.hour == rhs.hour {
-            if lhs.minute < rhs.minute {
+        } else if self.hour == rhs.hour {
+            if self.minute > rhs.minute {
                 return true
             }
         }
         return false
-    }
-
-    static func <= (lhs: Time, rhs: Time) -> Bool {
-        if lhs.hour <= rhs.hour {
-            if lhs.minute <= rhs.minute {
-                return true
-            }
-        }
-        return false
-    }
-    
-    static func > (lhs: Time, rhs: Time) -> Bool {
-        if lhs.hour > rhs.hour {
-            return true
-        } else if lhs.hour == rhs.hour {
-            if lhs.minute > rhs.minute {
-                return true
-            }
-        }
-        return false
-    }
-    
-    static func >= (lhs: Time, rhs: Time) -> Bool {
-        if lhs.hour >= rhs.hour {
-            if lhs.minute >= rhs.minute {
-                return true
-            }
-        }
-        return false
-    }
-    
-    static func == (lhs: Time, rhs: Time) -> Bool {
-        if lhs.hour == rhs.hour && lhs.minute == rhs.minute {
-            return true
-        }
-        return false
-    }
-    
-    static func != (lhs: Time, rhs: Time) -> Bool {
-        return !(lhs == rhs)
     }
 }

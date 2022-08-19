@@ -7,6 +7,14 @@
 
 import Foundation
 
+public protocol Cron {
+    var command: String { get }
+    
+    func nextFiring(basedOnTime: Time) -> Time
+    
+    init?(cronString: String)
+}
+
 // enum specifies when the cron can run.
 enum RunOn {
     case everyMinute            // * *
@@ -15,16 +23,19 @@ enum RunOn {
     case everyDayAt(Int, Int)   // x x
 }
 
-protocol Cron {
-    func nextFiringStatement(currentTime: Time) -> String
-}
-
 class ConcreteCron: Cron {
     
     private let run: RunOn
     let command: String
     
-    init?(minute: String, hour: String, command: String) {
+    required init?(cronString: String) {
+        let split = cronString.components(separatedBy: " ")
+        guard split.count == 3 else {
+            return nil
+        }
+        let minute = split[0]
+        let hour = split[1]
+        let command = split[2]
         
         // We will set everyMin/Hour if a * comes through for that. otherwise we use intMin/Hour.
         var everyMin = false
@@ -59,43 +70,32 @@ class ConcreteCron: Cron {
         } else if everyHour {
             run = .everyHourAt(intMin)
         } else {
-            print("everyday \(intHour) \(intMin)")
             run = .everyDayAt(intHour, intMin)
         }
         
         self.command = command
     }
     
-    private func nextFiringTime(currentTime: Time) -> Time {
+    // Does this violate single responsibility?
+    func nextFiring(basedOnTime passedInTime: Time) -> Time {
         switch run {
         case .everyMinute:
-            return Time(hour: currentTime.hour, minute: currentTime.minute + 1)
+            return ConcreteTime(hour: passedInTime.hour, minute: passedInTime.minute)
         case .everyMinuteOnHour(let hour):
-//            if the current hour is the same as the firing hour
-            if currentTime.hour == hour {
-                return Time(hour: currentTime.hour, minute: currentTime.minute + 1)
+            // if the current hour is the same as the firing hour
+            if passedInTime.hour == hour {
+                return ConcreteTime(hour: passedInTime.hour, minute: passedInTime.minute)
             }
-            return Time(hour: hour, minute: 0)
+            return ConcreteTime(hour: hour, minute: 0)
         case .everyHourAt(let minute):
-//            if the firing minute is passed or equal to current minute increment hour
-            if currentTime.minute >= minute {
-                return Time(hour: currentTime.hour + 1, minute: minute)
+            // if the firing minute is passed or equal to current minute increment hour
+            if passedInTime.minute > minute {
+                return ConcreteTime(hour: passedInTime.hour + 1, minute: minute)
             }
-            return Time(hour: currentTime.hour, minute: minute)
+            return ConcreteTime(hour: passedInTime.hour, minute: minute)
         case .everyDayAt(let hour, let minute):
-            print("\(minute)  ... h \(hour)")
-            return Time(hour: hour, minute: minute)
+            return ConcreteTime(hour: hour, minute: minute)
         }
     }
     
-    func nextFiringStatement(currentTime: Time) -> String {
-        let nextFiring = nextFiringTime(currentTime: currentTime)
-
-        var day = "today"
-        if currentTime >= nextFiring {
-            day = "tomorrow"
-        }
-        
-        return "\(nextFiring.description) \(day) - \(command)"
-    }
 }

@@ -8,33 +8,31 @@
 import Foundation
 import ElementFramework
 
-let stdin = CommandLine.arguments[0]
-print("Location:", stdin) // So i can get access to it easier and test in terminal
 
+var stdin: Data
+stdin = FileHandle.standardInput.availableData
 
-let args = CommandLine.arguments.dropFirst()
-print("Number of arguments:", args.count)
+let str = String(data: stdin, encoding: .ascii)
+//let str = TestData.CronsString
 
-print("Arguments:")
-for arg in args {
-    print("-", arg)
-}
+let commandArgTime = CommandLine.arguments[1]
+let currentTime = Scheduler.CreateTime(fromHHmmFormat: commandArgTime)
 
-// Classes below
-let file = CommandLine.arguments[1]
-let currentTime = CommandLine.arguments[2]
+// Parse
+if let split = str?.components(separatedBy: "\n") {
 
+    var crons: [Cron] = []
+    for cronString in split {
+        if let cron = Scheduler.CreateCron(cronString: cronString) {
+            crons.append(cron)
+        }
+    }
+    
+    for cron in crons {
+        if let currentTime = currentTime {
+            let scheduledCronFiringDescription = Scheduler.CronNextFiringDescription(basedOnTime: currentTime, forCron: cron)
+            print(scheduledCronFiringDescription)
 
-// We keep the code in a framework. Because we want it to use XCTest and a command line project alone cannot use XCTest.
-// Im very used to using frameworks in applications so this didnt take long but the structure leaves me to be a little unhappy with it
-// But its a very quick implementation so dont expect the interface to be nice
-do {
-    let scheduler = Scheduler(location: file, currentTime: currentTime)
-    try scheduler.runSchedule()
-} catch SchedulerError.noSchedule {
-    print("No schedule given")
-} catch SchedulerError.cantReadCurrentTime {
-    print("Can't read current time")
-} catch SchedulerError.scheduleCorrupted {
-    print("Test file has an error")
+        }
+    }
 }

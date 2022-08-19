@@ -14,6 +14,11 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
+		<key>ElementFrameworkTests.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
 		<key>ElementTest.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
@@ -23,6 +28,16 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>2209185F28A6301C002E6AF1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2209188828A6AA02002E6AF1</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>2209189128A6AA02002E6AF1</key>
 		<dict>
 			<key>primary</key>
 			<true/>
